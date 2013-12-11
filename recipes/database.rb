@@ -2,8 +2,8 @@ include_recipe "zabbix::common"
 
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
 
-include_recipe "database::mysql"
-include_recipe "mysql::client"
+#include_recipe "database::mysql"
+#include_recipe "mysql::client"
 
 # Generates passwords if they aren't already set
 # This is INSECURE because node.normal persists the passwords to the chef
@@ -18,7 +18,7 @@ end
 
 case node['zabbix']['database']['install_method'] 
 when 'rds_mysql'
-  root_username       = node['zabbix']['database']['rds_master_username']
+  root_psername       = node['zabbix']['database']['rds_master_username']
   root_password       = node['zabbix']['database']['rds_master_password']
   allowed_user_hosts  = "%"
   provider = Chef::Provider::ZabbixDatabaseMySql
@@ -34,8 +34,8 @@ when 'postgres'
   unless node['postgresql']['password']['postgres']
     node.normal['postgresql']['password']['postgres'] = secure_password
   end
-  root_username       = "postgres"
-  root_password       = node['postgresql']['password']['postgres'] 
+  root_username       = "pgsql"
+  root_password       = node['postgresql']['password']['pgsql'] 
   provider = Chef::Provider::ZabbixDatabasePostgres
 end
 

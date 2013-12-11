@@ -38,7 +38,7 @@ root_dirs = [
 root_dirs.each do |dir|
   directory dir do
     owner "root"
-    group "root"
+    group node['root_group']
     mode "755"
     recursive true
   end

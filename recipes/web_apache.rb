@@ -20,29 +20,50 @@ end
 
 user node['zabbix']['web']['user']
 
+php_packages=[]
 case node['platform_family']
 when "debian"
-  %w{ php5-mysql php5-gd }.each do |pck|
-    package pck do
-      action :install
-      notifies :restart, "service[apache2]"
-    end
+  php_packages.push( 'php5-gd');
+  case node['zabbix']['database']['install_method']
+  when "mysql"
+    php_packages.push( 'php5-mysql');
+  when "postgres"
+    php_packages.push( 'php5-pgsql');
   end
 when "rhel"
   if node['platform_version'].to_f < 6.0
-    %w{ php53-mysql php53-gd php53-bcmath php53-mbstring }.each do |pck|
-      package pck do
-        action :install
-        notifies :restart, "service[apache2]"
-      end
+    php_packages.push( 'php53-gd', 'php53-bcmath', 'php53-mbstring');
+    case node['zabbix']['database']['install_method']
+    when "mysql"
+      php_packages.push( 'php53-mysql');
+    when "postgres"
+      php_packages.push( 'php53-pgsql');
     end
   else
-    %w{ php php-mysql php-gd php-bcmath php-mbstring php-xml }.each do |pck|
-      package pck do
-        action :install
-        notifies :restart, "service[apache2]"
-      end
+    php_packages.push( 'php', 'php-gd', 'php-bcmath', 'php-mbstring', 'php-xml');
+    case node['zabbix']['database']['install_method']
+    when "mysql"
+      php_packages.push( 'php-mysql');
+    when "postgres"
+      php_packages.push( 'php-pgsql');
     end
+  end
+when "freebsd"
+  # WTF?  php5-pgsql is compiled against postgresql9.0?
+  # For now, install php5-pgsql when the chef run fails to install it
+  php_packages.push( 'php5-gd');
+  case node['zabbix']['database']['install_method']
+  when "mysql"
+    php_packages.push( 'php5-mysql');
+  when "postgres"
+    php_packages.push( 'php5-pgsql');
+  end
+end
+
+php_packages.each do |pck|
+  package pck do
+    action :install
+    notifies :restart, "service[apache2]"
   end
 end
 
@@ -73,7 +94,7 @@ end
 template "#{node['zabbix']['src_dir']}/zabbix-#{node['zabbix']['server']['version']}/frontends/php/conf/zabbix.conf.php" do
   source "zabbix_web.conf.php.erb"
   owner "root"
-  group "root"
+  group node['root_group']
   mode "754"
   variables({
     :database => node['zabbix']['database'],
@@ -90,6 +111,8 @@ web_app node['zabbix']['web']['fqdn'] do
   php_settings node['zabbix']['web']['php']['settings']
   notifies :restart, "service[apache2]", :immediately 
 end  
+
+include_recipe 'apache2::mod_php5'
 
 apache_site "000-default" do
   enable false

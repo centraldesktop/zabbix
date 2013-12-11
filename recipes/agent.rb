@@ -7,7 +7,7 @@ template "zabbix_agentd.conf" do
   source "zabbix_agentd.conf.erb"
   unless node['platform_family'] == "windows"
     owner "root"
-    group "root"
+    group node['root_group']
     mode "644"
   end
   notifies :restart, "service[zabbix_agentd]"

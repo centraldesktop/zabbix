@@ -64,7 +64,7 @@ end
 template ::File.join(conf_dir, "zabbix.conf.php") do
   source "zabbix_web.conf.php.erb"
   owner "root"
-  group "root"
+  group node['root_group']
   mode "754"
   variables ({
     :database => node['zabbix']['database'],
@@ -77,7 +77,7 @@ end
 template "/etc/nginx/sites-available/zabbix" do
   source "zabbix_nginx.erb"
   owner "root"
-  group "root"
+  group node['root_group']
   mode "754"
   variables ({
     :server_name => node['zabbix']['web']['fqdn'],

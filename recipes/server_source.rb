@@ -80,7 +80,7 @@ end
 template "/etc/init.d/zabbix_server" do
   source init_template
   owner "root"
-  group "root"
+  group node['root_group']
   mode "755"
   notifies :restart, "service[zabbix_server]", :delayed
 end
@@ -89,7 +89,7 @@ end
 template "#{node['zabbix']['etc_dir']}/zabbix_server.conf" do
   source "zabbix_server.conf.erb"
   owner "root"
-  group "root"
+  group node['root_group']
   mode "644"
   variables ({
     :dbhost             => node['zabbix']['database']['dbhost'],

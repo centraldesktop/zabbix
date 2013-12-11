@@ -4,7 +4,7 @@ when "sysvinit"
   template "/etc/init.d/zabbix_agentd" do
     source value_for_platform_family([ "rhel" ] => "zabbix_agentd.init-rh.erb", "default" => "zabbix_agentd.init.erb")
     owner "root"
-    group "root"
+    group node['root_group']
     mode "754"
   end
 
@@ -19,5 +19,9 @@ when "windows"
     provider Chef::Provider::Service::Windows
     supports :restart => true
     action :nothing
+  end
+else
+  service "zabbix_agentd" do
+    supports :status => true, :start => true, :stop => true, :restart => true
   end
 end

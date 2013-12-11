@@ -106,7 +106,7 @@ def create_new_database
 
   # populate database
   set_password = "export PGPASSWORD=#{new_resource.password}"
-  executable = "/usr/bin/psql"
+  executable = "/usr/local/bin/psql"
   username = "-U #{new_resource.username}"
   host = "-h #{new_resource.host}"
   port = "-p #{new_resource.port}"
