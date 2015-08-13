@@ -7,10 +7,10 @@
 # Apache 2.0
 #
 
-package "zabbix2-server" do
+package "zabbix24-server" do
   action :install
 end
-package "zabbix2-frontend" do
+package "zabbix24-frontend" do
   action :install
 end
 

@@ -22,6 +22,10 @@ when 'rds_mysql'
   root_password       = node['zabbix']['database']['rds_master_password']
   allowed_user_hosts  = "%"
   provider = Chef::Provider::ZabbixDatabaseMySql
+when 'rds_postgres'
+  root_username       = node['zabbix']['database']['rds_master_username']
+  root_password       = node['zabbix']['database']['rds_master_password']
+  provider = Chef::Provider::ZabbixDatabasePostgres
 when 'mysql'
   unless node['mysql']['server_root_password'] 
     node.normal['mysql']['server_root_password'] = secure_password

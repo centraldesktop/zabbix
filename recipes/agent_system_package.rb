@@ -7,6 +7,6 @@
 # Apache 2.0
 #
 
-package 'zabbix2-agent' do
+package 'zabbix24-agent' do
   action :install
 end
